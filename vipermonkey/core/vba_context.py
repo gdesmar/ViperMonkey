@@ -896,8 +896,13 @@ class Context(object):
 
         # Don't reopen already opened files.
         if (fname in self.open_files.keys()):
-            log.warning("File " + safe_str_convert(fname) + " is already open.")
-            return
+            if fname == "ADODB.Stream":
+                # A new ADODB.Stream is being called
+                # We lose track of the old one, but the new one is going to be empty
+                log.warning("Assuming a new " + safe_str_convert(fname) + " is getting open.")
+            else:
+                log.warning("File " + safe_str_convert(fname) + " is already open.")
+                return
 
         # Open the simulated file.
         self.open_files[fname] = b''
